@@ -28,21 +28,35 @@ path_list = [os.path.join(article_dir, x) for x in os.listdir(article_dir)]
 len(path_list)
 
 
-# In[4]:
+# In[72]:
+
+
+path_list[0]
+
+
+# In[73]:
 
 
 corpus = []
+article_ids = []
 for p in path_list:
     with open(p, 'rb') as f:
         txt = pkl.load(f)
         if len(txt)>5000:
             corpus.append(txt)
+            article_ids.append(p.split('/')[2].split('.')[0])
 
 
-# In[5]:
+# In[74]:
 
 
 len(corpus)
+
+
+# In[76]:
+
+
+int(article_ids[0])
 
 
 # ## IDF processing
@@ -252,69 +266,81 @@ for word in list(set(dummy))[0:100]:
     print(terms[word])
 
 
-# In[19]:
+# In[88]:
 
 
 occ = Counter(dummy)
 
 
-# In[25]:
+# In[89]:
 
 
 print(len(occ.keys()))
 print(len(dummy))
 
 
-# In[26]:
-
-
-for wid in list(occ.keys())[:20]:
-    print(wid, " : ", occ[wid])
-
-
-# In[27]:
+# In[90]:
 
 
 for wid in list(occ.keys()):
-    if occ[wid] < 9:
+    if occ[wid] < 15:
         del occ[wid]
 
 
-# In[28]:
+# In[91]:
 
 
 print(len(occ.keys()))
 
 
-# In[ ]:
+# In[92]:
 
 
-subvfa = subvf.toarray()
-print(len(subvfa[0]))
+for wid in list(occ.keys()):
+    print(terms[wid])
 
 
-# In[ ]:
+# In[93]:
 
 
-len(subv.get_feature_names())
+survived = {}
+for word in list(occ.keys()):
+    for i, k in enumerate(keywords1):
+        if word in k:
+            if article_ids[i] not in survived:
+                survived[article_ids[i]] = [word]
+            else:
+                survived[article_ids[i]].append(word)
+            #print(i,":",word)
+            
+print(len(survived.keys()))
 
 
-# In[ ]:
+# In[94]:
 
 
-#len(freqs[0])
+survived_articles = list(survived.keys())
+survived_articles.sort()
+for s in survived_articles[:30]:
+    print(s)
+    output = [terms[x] for x in survived[s]]
+    print(output)
 
 
-# In[ ]:
+# In[95]:
 
 
-len(terms)
+len(survived_articles)
 
 
-# In[ ]:
+# In[35]:
 
 
-tv = TfidfVectorizer(ngram_range=(1,2), stop_words='english', min_df=1)
-tvf = tv.fit(corpus)
-tvfa = tvf.transform(corpus).toarray()
+print(len(survived))
+
+
+# In[37]:
+
+
+list(survived)[0:100]
 
